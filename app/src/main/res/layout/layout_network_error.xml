@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/emptyView"
+    >
+
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="140dp"-->
+        <!--android:layout_above="@+id/emptyText"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="16dp"-->
+        <!--android:scaleY="1.2"-->
+        <!--android:scaleX="1.2"-->
+        <!--android:id="@+id/emptyImage" />-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/emptyText"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="18dp"
+
+        android:layout_marginRight="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#000"
+        android:layout_marginLeft="16dp"
+        android:textAlignment="center"
+        android:text="NO INTERNET FOUND"/>
+
+
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/emptySubText"-->
+        <!--android:layout_below="@+id/emptyText"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:textSize="14dp"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:layout_marginRight="16dp"-->
+        <!--android:fontFamily="sans-serif"-->
+        <!--android:textColor="#000"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:textAlignment="center"-->
+        <!--android:text="Check your connection or try again"/>-->
+
+    <!--<Button android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="RETRY"-->
+        <!--android:id="@+id/networkRetry"-->
+        <!--android:background="#000"-->
+        <!--android:textSize="20dp"-->
+        <!--android:paddingLeft="20dp"-->
+        <!--android:fontFamily="sans-serif"-->
+        <!--android:paddingRight="20dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_below="@+id/emptySubText"-->
+        <!--android:layout_marginTop="48dp"-->
+        <!--android:textColor="#fff"/>-->
+
+</RelativeLayout>

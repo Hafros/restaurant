@@ -151,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     startActivity(intent);
 
                 }
-                else if (isIDNull()){
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                else{
+                    Intent intent = new Intent(MainActivity.this, DetailActivity.class);
 
                     intent.putExtra("id", ""+mData.get(position).id);
                     startActivity(intent);

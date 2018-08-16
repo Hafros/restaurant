@@ -12,6 +12,7 @@ public class DataModel {
     @Nullable String name;
     @Nullable String photo;
     @Nullable String url;
+    @Nullable String text;
 
     public DataModel(@NonNull JSONObject jsonObject) throws JSONException {
 
@@ -19,6 +20,9 @@ public class DataModel {
         this.name = jsonObject.getString("name");
         this.photo = jsonObject.getString("photo");
         this.url = jsonObject.getString("url");
+        if (jsonObject.has("text") && !jsonObject.getString("text").isEmpty()){
+            this.text = jsonObject.getString("text");
+        }
 
     }
 

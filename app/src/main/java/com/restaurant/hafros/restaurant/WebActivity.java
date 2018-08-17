@@ -198,6 +198,12 @@ public class WebActivity extends AppCompatActivity implements NetworkStateReceiv
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+        unregisterReceiver(networkStateReceiver);
+    }
+
+    @Override
     public void networkUnavailable() {
 
         runOnUiThread(new Runnable() {

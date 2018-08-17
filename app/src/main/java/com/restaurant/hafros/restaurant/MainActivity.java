@@ -17,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.applinks.AppLinkData;
 import com.nguyenhoanglam.progresslayout.ProgressWheel;
 
 import java.util.ArrayList;
@@ -52,6 +55,31 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+
+        AppLinkData.fetchDeferredAppLinkData(this, new AppLinkData.CompletionHandler() {
+            @Override
+            public void onDeferredAppLinkDataFetched(AppLinkData appLinkData) {
+
+                if (appLinkData != null){
+                    Log.d("DEEP",""+appLinkData.toString());
+                }
+
+
+            }
+        });
+
+        AppLinkData.fetchDeferredAppLinkData(this, getResources().getString(R.string.facebook_app_id), new AppLinkData.CompletionHandler() {
+            @Override
+            public void onDeferredAppLinkDataFetched(AppLinkData appLinkData) {
+                if (appLinkData != null){
+                    Log.d("DEEP2",""+appLinkData.toString());
+                }
+            }
+        });
+
 
 
 
@@ -66,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
 
 
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
             }
 
 
@@ -222,6 +250,15 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         });
 
     }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+
+        unregisterReceiver(networkStateReceiver);
+    }
+
 
     @Override
     public void networkAvailable() {

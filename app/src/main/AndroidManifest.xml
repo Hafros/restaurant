@@ -15,11 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.AutoLogAppEventsEnabled" android:value="true"/>
+
+
         <activity android:name=".MainActivity">
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
 
@@ -27,7 +33,25 @@
 
         </activity>
 
-        <activity android:name=".DetailActivity"/>
+        <activity android:name=".DetailActivity">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="http"
+                    android:host="www.example.com"
+                    android:pathPrefix="/"
+                    />
+                <data android:scheme="gureevapp"
+                    android:host="restaurant"
+                    android:pathPrefix="/"
+                    />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>

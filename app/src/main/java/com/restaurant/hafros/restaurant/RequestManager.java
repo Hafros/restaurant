@@ -120,7 +120,7 @@ public final class RequestManager {
                         ArrayList<DataModel> arrayList = new ArrayList<>();
                         arrayList.add(model);
 
-                        handler.successHandler(arrayList);
+                        handler.successHandler(arrayList,false,false);
 
                     }
 
@@ -144,7 +144,7 @@ public final class RequestManager {
 
                     }
 
-                    handler.successHandler(arrayList);
+                    handler.successHandler(arrayList,false,false);
 
                 }
 
@@ -160,51 +160,66 @@ public final class RequestManager {
 
     }
 
-    public static void fetchList(final APIHandler handler){
+    private static boolean isInteger(@Nullable Object string){
 
-        makeGetRequest(getBASEURL()+"/api/list", new NetworkHandler() {
+        try{
+            Integer number = Integer.parseInt(""+string);
+            return true;
+        }
+        catch (NumberFormatException e){
+            return false;
+        }
+        catch (NullPointerException e){
+            return false;
+        }
+
+    }
+
+    public static void fetchList(@Nullable String page,final APIHandler handler){
+
+
+
+        makeGetRequest(getBASEURL()+"/api/pages" + "?page="+page, new NetworkHandler() {
             @Override
             public void successHandler(String body) throws JSONException {
 
                 if (isJSONObject(body)){
                     JSONObject jsonObject = new JSONObject(body);
 
-                    DataModel model = new DataModel(jsonObject);
+                    if (jsonObject.has("restaurants")){
 
-                    if (model != null){
+                        JSONArray restaurants = jsonObject.getJSONArray("restaurants");
 
                         ArrayList<DataModel> arrayList = new ArrayList<>();
-                        arrayList.add(model);
 
-                        handler.successHandler(arrayList);
+                        for (int i = 0; i < restaurants.length(); i++) {
 
-                    }
+                            JSONObject object = restaurants.getJSONObject(i);
 
-                }
+                            DataModel model = new DataModel(object);
 
-                if (isJSONArray(body)){
+                            if (model != null){
+                                arrayList.add(model);
+                            }
 
-                    ArrayList<DataModel> arrayList = new ArrayList<>();
-
-                    JSONArray jsonArray = new JSONArray(body);
-
-                    for (int i=0; i<jsonArray.length(); i++) {
-
-                        JSONObject component = jsonArray.getJSONObject(i);
-
-                        DataModel model = new DataModel(component);
-
-                        if (model != null){
-                            arrayList.add(model);
                         }
 
+
+
+                        boolean hasNext = isInteger(jsonObject.get("next"));
+                        boolean hasPrevious = isInteger(jsonObject.get("previous"));
+
+                        handler.successHandler(arrayList, hasNext, hasPrevious);
+
+
+                    }
+                    else{
+                        handler.failHandler("No Items");
                     }
 
-                    handler.successHandler(arrayList);
+
 
                 }
-
-
 
             }
 

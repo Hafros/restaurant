@@ -2,14 +2,18 @@ package com.restaurant.hafros.restaurant;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,7 +33,7 @@ public class DetailActivity extends AppCompatActivity implements NetworkStateRec
     private boolean loaded = false;
     private ImageView imageView;
     private TextView name;
-    private TextView textView;
+    private WebView textView;
     private String id;
 
     @Override
@@ -59,7 +63,8 @@ public class DetailActivity extends AppCompatActivity implements NetworkStateRec
 
         imageView = (ImageView) findViewById(R.id.imageView);
         name = (TextView) findViewById(R.id.textView);
-        textView = (TextView) findViewById(R.id.text);
+        textView = (WebView) findViewById(R.id.text);
+        textView.setBackgroundColor(Color.TRANSPARENT);
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,8 +129,7 @@ public class DetailActivity extends AppCompatActivity implements NetworkStateRec
 
         RequestManager.fetchByID(id, new APIHandler() {
             @Override
-            public void successHandler(ArrayList<DataModel> items) {
-
+            public void successHandler(ArrayList<DataModel> items, boolean hasNext, boolean hasPrevious) {
                 if (items.size() == 0){
 
                     multiStateLayout.setState(MultiStateLayout.State.EMPTY);
@@ -134,7 +138,6 @@ public class DetailActivity extends AppCompatActivity implements NetworkStateRec
                 }
 
                 updateContent(items.get(0));
-
             }
 
             @Override
@@ -161,7 +164,7 @@ public class DetailActivity extends AppCompatActivity implements NetworkStateRec
 
                 name.setText(model.name);
 
-                textView.setText(model.text);
+                textView.loadData(model.text, "text/html; charset=utf-8", "UTF-8");
 
 
                 multiStateLayout.setState(MultiStateLayout.State.CONTENT);

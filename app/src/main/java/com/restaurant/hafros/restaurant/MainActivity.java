@@ -2,6 +2,7 @@ package com.restaurant.hafros.restaurant;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,29 +13,37 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.aspsine.irecyclerview.IRecyclerView;
+import com.aspsine.irecyclerview.OnLoadMoreListener;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.applinks.AppLinkData;
 import com.nguyenhoanglam.progresslayout.ProgressWheel;
+import com.rubengees.easyheaderfooteradapter.EasyHeaderFooterAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.refactor.multistatelayout.MultiStateLayout;
 import cn.refactor.multistatelayout.OnStateViewCreatedListener;
 
 public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
-    private RecyclerView recyclerView;
+    private IRecyclerView recyclerView;
     private MultiStateLayout multiStateLayout;
     private ArrayList<DataModel> mData = new ArrayList<>();
     private DataAdapter adapter;
     private NetworkStateReceiver networkStateReceiver;
     private DataViewModel viewModel;
+    private LoadMoreFooterView loadMoreFooterView;
+    private EasyHeaderFooterAdapter easyHeaderFooterAdapter;
 
 
     private boolean isIDNull(){
@@ -57,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+
+        loadMoreFooterView = new LoadMoreFooterView(this);
+
+        loadMoreFooterView.stylishView(Color.RED,Color.WHITE);
+
 
 
         AppLinkData.fetchDeferredAppLinkData(this, new AppLinkData.CompletionHandler() {
@@ -154,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
 
 
-        recyclerView = (RecyclerView) findViewById(R.id.mainList);
+        recyclerView = (IRecyclerView) findViewById(R.id.mainList);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
@@ -163,10 +177,53 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
         adapter = new DataAdapter(mData);
 
-        recyclerView.setAdapter(adapter);
+        easyHeaderFooterAdapter =
+                new EasyHeaderFooterAdapter(adapter);
+
+        easyHeaderFooterAdapter.setFooter(loadMoreFooterView);
+
+        ViewGroup.LayoutParams params2 = easyHeaderFooterAdapter.getFooter().getLayoutParams();
+
+        params2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, App.dpToPx(48,getResources()));
+
+        easyHeaderFooterAdapter.getFooter().setLayoutParams(params2);
+
+        easyHeaderFooterAdapter.getFooter().setBackgroundColor(Color.WHITE);
+
+        recyclerView.setAdapter(easyHeaderFooterAdapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        recyclerView.setLoadMoreEnabled(true);
+        recyclerView.setLoadMoreFooterView(loadMoreFooterView);
+
+        recyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+
+                if (mData.size() <= 0){
+                    return;
+                }
+
+                if (viewModel.canLoad()) {
+                    loadMoreFooterView.setStatus(LoadMoreFooterView.Status.LOADING);
+                    loadData();
+
+                }
+                else{
+
+                    if (!viewModel.hasNextPage){
+                        loadMoreFooterView.setStatus(LoadMoreFooterView.Status.GONE);
+                        easyHeaderFooterAdapter.setFooter(null);
+                        recyclerView.setOnLoadMoreListener(null);
+                    }
+
+
+                }
+
+                Log.d("LOAD MORE","OK");
+            }
+        });
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
@@ -197,13 +254,20 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
     private void loadData(){
 
-        multiStateLayout.setState(MultiStateLayout.State.LOADING);
+        if (mData.size() == 0) {
+            multiStateLayout.setState(MultiStateLayout.State.LOADING);
+        }
 
-        viewModel.fetchItems(new APIHandler() {
+        loadMoreFooterView.setStatus(LoadMoreFooterView.Status.LOADING);
+
+        viewModel.fetchItems(null,new APIHandler() {
             @Override
-            public void successHandler(ArrayList<DataModel> items) {
+            public void successHandler(ArrayList<DataModel> items, boolean hasNext, boolean hasPrevious) {
                 if (items.isEmpty()){
+                    loadMoreFooterView.setStatus(LoadMoreFooterView.Status.GONE);
+                    easyHeaderFooterAdapter.setFooter(null);
                     showEmpty();
+
                     return;
                 }
 
@@ -239,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             @Override
             public void run() {
 
-                mData.clear();
+                //mData.clear();
                 mData.addAll(items);
 
                 adapter.notifyDataSetChanged();
@@ -264,7 +328,12 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     public void networkAvailable() {
 
         if (mData.size() == 0){
-            loadData();
+
+            if (viewModel.canLoad()){
+                loadData();
+            }
+
+
             return;
         }
 

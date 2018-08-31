@@ -18,7 +18,7 @@
         state:animEnable="true"
         state:animDuration="300">
 
-        <android.support.v7.widget.RecyclerView
+        <com.aspsine.irecyclerview.IRecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/mainList"/>

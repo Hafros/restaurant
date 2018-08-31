@@ -24,6 +24,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0-rc01'
     implementation 'com.android.support:support-v4:28.0.0-rc01'
     implementation 'com.android.support:recyclerview-v7:28.0.0-rc01'
@@ -39,5 +40,11 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+
+    implementation 'com.github.Aspsine:IRecyclerView:0.0.5'
+
+    implementation 'com.github.rubengees:easy-header-footer-adapter:3.0.0@aar'
+
+    implementation 'io.square1:richtext:5.0.3'
 
 }

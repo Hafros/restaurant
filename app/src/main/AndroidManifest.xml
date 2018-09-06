@@ -41,12 +41,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:scheme="http"
-                    android:host="www.example.com"
-                    android:pathPrefix="/"
-                    />
-                <data android:scheme="gureevapp"
-                    android:host="restaurant"
+                <data android:scheme="${schemeName}"
+                    android:host="${hostName}"
                     android:pathPrefix="/"
                     />
             </intent-filter>

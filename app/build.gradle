@@ -1,21 +1,136 @@
 apply plugin: 'com.android.application'
 
+def appName
+def appPackage
+def appVersion
+def buildVersion
+def facebookID
+def schemaName
+def hostName
+
 android {
+
+
+
+
+
+
     compileSdkVersion 28
-    defaultConfig {
-        applicationId "com.restaurant.hafros.restaurant"
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
+//    defaultConfig {
+//        applicationId = APP_PACKAGE
+//        minSdkVersion 19
+//        targetSdkVersion 28
+//        versionCode APP_BUILD_VERSION.toInteger()
+//        versionName APP_VERSION
+//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//    }
+
     buildTypes {
+
+        all{
+
+            appName = System.getenv("APPLICATION_NAME")
+            appPackage = System.getenv("APPLICATION_PACKAGE")
+            appVersion = System.getenv("APPLICATION_VERSION")
+            facebookID = System.getenv("FACEBOOK_APP_ID")
+            schemaName = System.getenv("SCHEMA")
+            hostName   = System.getenv("HOST")
+
+            def shopProperties = new Properties();
+            File shopPropertiesFile = project.file('shop.properties')
+
+            if (shopPropertiesFile.exists()) {
+                shopProperties.load(new FileInputStream(shopPropertiesFile))
+
+                appName = appName ?: shopProperties["APPLICATION_NAME"]
+                appPackage = appPackage ?: shopProperties["APPLICATION_PACKAGE"]
+                appVersion = appVersion ?: shopProperties["APPLICATION_VERSION"]
+                facebookID = facebookID ?: shopProperties["FACEBOOK_APP_ID"]
+                schemaName = schemaName ?: shopProperties["SCHEMA"]
+                hostName   = hostName ?: shopProperties["HOST"]
+            }
+
+
+
+            if (!appName) {
+                appName = ""
+            }
+
+            if (!appPackage) {
+                appPackage = "com.default.test"
+            }
+
+            if (!appVersion) {
+                appVersion = "1.0"
+            }
+
+            if (!facebookID){
+                facebookID = "1"
+            }
+
+            def last = appVersion.tokenize('.').last()
+
+            if (last != "0"){
+                buildVersion = last;
+            }
+
+            if (!schemaName){
+                schemaName = "default"
+            }
+
+            if (!hostName){
+                hostName = "default"
+            }
+
+        }
+
+        ext {
+            APP_NAME = appName
+            APP_PACKAGE = appPackage
+            APP_VERSION = appVersion
+            APP_BUILD_VERSION = buildVersion
+            FACEBOOK_APP_ID = facebookID
+            SCHEMA_NAME = schemaName
+            HOST_NAME = hostName
+
+        }
+
+        defaultConfig {
+
+            int value = APP_BUILD_VERSION.toInteger()
+
+            //def vali = ""+APP_VERSION
+
+
+            minSdkVersion 19
+            targetSdkVersion 28
+            applicationId = APP_PACKAGE
+            versionCode value
+            versionName APP_VERSION
+
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        }
+
         release {
+//            manifest.attributes(["attr1":"value1", "attr2":"value2"])
+//            manifestPlaceholders = [hostName:"www.example.com"]
+            resValue "string", "facebook_app_id", FACEBOOK_APP_ID
+            resValue "string", "app_name", APP_NAME
+            manifestPlaceholders = [applicationLabel: APP_NAME, hostName:HOST_NAME,schemeName:SCHEMA_NAME]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug{
+            resValue "string", "facebook_app_id", FACEBOOK_APP_ID
+            resValue "string", "app_name", APP_NAME
+            manifestPlaceholders = [applicationLabel: APP_NAME, hostName:HOST_NAME,schemeName:SCHEMA_NAME]
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
     }
+
+
 
     dataBinding {
         enabled = true
